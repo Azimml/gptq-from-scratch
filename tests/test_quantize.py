@@ -2,6 +2,7 @@
 Tests for the symmetric-uniform quantization primitives in ``quantize.py``.
 """
 
+import pytest
 import torch
 
 from quantize import (
@@ -93,6 +94,14 @@ def test_round_to_nearest_matches_quantize_tensor():
     rtn = round_to_nearest(w, n_bits=4)
     w_hat, _ = quantize_tensor(w, n_bits=4)
     assert torch.allclose(rtn, w_hat)
+
+
+@pytest.mark.parametrize("bad_bits", [1, 0, -1])
+def test_quantize_tensor_rejects_too_few_bits(bad_bits):
+    """Fewer than 2 bits leaves no magnitude levels; it must raise, not silently
+    produce a degenerate grid."""
+    with pytest.raises(ValueError, match="n_bits must be >= 2"):
+        quantize_tensor(torch.randn(4, 4), n_bits=bad_bits)
 
 
 def test_symmetric_quantization_preserves_sign():
