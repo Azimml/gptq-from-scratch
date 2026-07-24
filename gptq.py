@@ -253,6 +253,12 @@ def quantize_model(
     """
     from model_utils import get_block_inputs, get_transformer_blocks
 
+    if not calibration_data:
+        raise ValueError(
+            "calibration_data is empty; GPTQ needs at least one sample to "
+            "estimate the layer Hessians."
+        )
+
     arch, blocks = get_transformer_blocks(model)
 
     sample_ids = calibration_data[0]
