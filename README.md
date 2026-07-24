@@ -228,7 +228,7 @@ pip install -e ".[dev]"
 ruff check .          # lint
 ruff format --check . # formatting
 mypy arch_config.py evaluate.py gptq.py main.py model_utils.py quantize.py
-pytest                # 36 tests: primitives, GPTQ math, arch accessors, end-to-end
+pytest                # 42 tests: primitives, GPTQ math, arch accessors, end-to-end
 ```
 
 GitHub Actions runs lint, type-check, and the full test suite on Python 3.10, 3.11, and 3.12 for every push and pull request (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
