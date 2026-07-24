@@ -108,6 +108,22 @@ def test_gptq_act_order_is_permutation_invariant_in_shape():
     assert loss >= 0
 
 
+def test_gptq_act_order_noop_for_diagonal_hessian():
+    """
+    With a diagonal Hessian (uncorrelated inputs) there is no cross-column
+    error compensation, so reordering the columns cannot change the result:
+    act-order must return exactly the same quantized matrix as without it.
+    """
+    torch.manual_seed(0)
+    W = torch.randn(16, 32)
+    H = torch.diag(torch.rand(32) + 1.0)  # strictly positive diagonal
+
+    Q_plain, _ = gptq_quantize_layer(W, H, n_bits=4, block_size=8, act_order=False)
+    Q_ordered, _ = gptq_quantize_layer(W, H, n_bits=4, block_size=8, act_order=True)
+
+    assert torch.equal(Q_plain, Q_ordered)
+
+
 def test_gptq_grouping_runs():
     """Per-group scales (group_size > 0) produce a valid quantized matrix."""
     torch.manual_seed(0)
