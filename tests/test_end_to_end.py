@@ -10,6 +10,7 @@ model producing finite logits — across GPT-2 (Conv1D) and Qwen2 (the new arch)
 import io
 from contextlib import redirect_stdout
 
+import pytest
 import torch
 
 from gptq import quantize_model
@@ -81,6 +82,13 @@ def test_end_to_end_qwen2_all_optimizations(tiny_qwen2):
     with torch.no_grad():
         logits = model(torch.randint(0, 128, (1, 16))).logits
     assert torch.isfinite(logits).all()
+
+
+def test_quantize_model_rejects_empty_calibration(tiny_gpt2):
+    """An empty calibration set fails fast with a clear message, not an opaque
+    IndexError deep in the pipeline."""
+    with pytest.raises(ValueError, match="calibration_data is empty"):
+        quantize_model(tiny_gpt2, [], device="cpu")
 
 
 def test_end_to_end_llama(tiny_llama):
