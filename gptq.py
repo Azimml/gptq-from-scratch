@@ -25,6 +25,12 @@ from tqdm import tqdm
 
 from quantize import compute_row_scales, quantize_column
 
+__all__ = [
+    "compute_hessian",
+    "gptq_quantize_layer",
+    "quantize_model",
+]
+
 
 def compute_hessian(X, damp_pct=0.01):
     """
