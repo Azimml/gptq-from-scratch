@@ -6,6 +6,13 @@ Symmetric uniform quantization to n-bit integers.
 
 import torch
 
+__all__ = [
+    "quantize_tensor",
+    "compute_row_scales",
+    "quantize_column",
+    "round_to_nearest",
+]
+
 
 def quantize_tensor(w, n_bits=4):
     """
