@@ -44,7 +44,13 @@ def get_transformer_blocks(model):
     return arch, blocks
 
 
-def get_calibration_data(tokenizer, n_samples=128, seq_len=2048, seed=42, dataset_name="wikitext2"):
+def get_calibration_data(
+    tokenizer,
+    n_samples: int = 128,
+    seq_len: int = 2048,
+    seed: int = 42,
+    dataset_name: str = "wikitext2",
+) -> list[torch.Tensor]:
     """
     Extract calibration data from a training set.
 
@@ -108,7 +114,7 @@ def get_block_inputs(model, calibration_data, device="cpu"):
     return block_inputs
 
 
-def get_weight_and_type(layer):
+def get_weight_and_type(layer: torch.nn.Module) -> tuple[torch.Tensor, bool]:
     """
     Get weight in (out_features, in_features) format, handling Conv1D.
 
@@ -122,7 +128,7 @@ def get_weight_and_type(layer):
         return layer.weight.data.clone(), False
 
 
-def set_weight(layer, Q, is_conv1d):
+def set_weight(layer: torch.nn.Module, Q: torch.Tensor, is_conv1d: bool) -> None:
     """Write quantized weight back, handling Conv1D transpose."""
     if is_conv1d:
         layer.weight.data = Q.T.to(layer.weight.dtype)
