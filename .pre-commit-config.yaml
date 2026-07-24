@@ -1,0 +1,22 @@
+# Pre-commit hooks: run `pre-commit install` once, then checks run on every
+# commit. Versions are pinned to match the ruff config in pyproject.toml.
+# See https://pre-commit.com for setup details.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.md$'  # Markdown uses trailing spaces for line breaks.
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+      - id: check-merge-conflict
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
+    hooks:
+      - id: ruff
+        args: ["--fix"]
+      - id: ruff-format
