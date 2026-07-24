@@ -1,0 +1,110 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gptq-from-scratch"
+version = "0.1.0"
+description = "A from-scratch PyTorch implementation of GPTQ post-training quantization (Frantar et al., 2022)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Azimbek Olimbekov" }]
+keywords = [
+    "gptq",
+    "quantization",
+    "post-training-quantization",
+    "llm",
+    "pytorch",
+    "transformers",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+# Upper bounds are set to the next major release so a breaking change in a
+# dependency cannot silently break the pipeline, while still allowing routine
+# minor/patch upgrades. The lower bounds are the oldest versions the code was
+# validated against.
+dependencies = [
+    "torch>=2.0,<3.0",
+    "transformers>=4.40,<6.0",
+    "accelerate>=0.27,<2.0",
+    "datasets>=2.14,<5.0",
+    "tqdm>=4.65,<5.0",
+    "numpy>=1.24,<3.0",
+    "packaging>=21.0",
+]
+
+[project.optional-dependencies]
+# Weights & Biases logging is optional; only needed for `main.py --wandb`.
+wandb = ["wandb>=0.16,<1.0"]
+# Figure generation for the README.
+figures = ["matplotlib>=3.7,<4.0"]
+# Development / CI tooling.
+dev = [
+    "pytest>=7.0,<9.0",
+    "ruff>=0.5,<1.0",
+    "mypy>=1.8,<3.0",
+]
+
+[project.urls]
+Repository = "https://github.com/Azimml/gptq-from-scratch"
+
+[project.scripts]
+gptq = "main:main"
+
+# The project is a flat collection of modules at the repository root rather than
+# a nested package, so list them explicitly and keep the test suite out of the
+# installable distribution.
+[tool.setuptools]
+py-modules = [
+    "arch_config",
+    "evaluate",
+    "gptq",
+    "main",
+    "model_utils",
+    "quantize",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = [
+    # Keep the suite readable; upstream deprecations are out of our control.
+    "ignore::DeprecationWarning",
+    "ignore::FutureWarning",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+extend-exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
+# pycodestyle (E, W), pyflakes (F), isort (I), pyupgrade (UP),
+# flake8-bugbear (B), flake8-comprehensions (C4).
+select = ["E", "W", "F", "I", "UP", "B", "C4"]
+ignore = [
+    "E501",  # line length is handled by the formatter, not enforced hard
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests reach into private helpers and re-import fixtures deliberately.
+"tests/*" = ["E402"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+# The codebase is dynamically typed against torch/transformers internals, so
+# strict mode is intentionally off; this catches obvious mistakes without noise.
+check_untyped_defs = false
+disallow_untyped_defs = false
+exclude = ["tests/", "generate_figures.py"]

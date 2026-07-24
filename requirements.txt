@@ -1,0 +1,15 @@
+# Runtime dependencies. Kept in sync with the [project.dependencies] table in
+# pyproject.toml, which is the canonical source. For an editable install with
+# dev/test tooling, prefer:  pip install -e ".[dev]"
+torch>=2.0,<3.0
+transformers>=4.40,<6.0
+accelerate>=0.27,<2.0
+datasets>=2.14,<5.0
+tqdm>=4.65,<5.0
+numpy>=1.24,<3.0
+packaging>=21.0
+
+# Optional: Weights & Biases logging (main.py --wandb)
+wandb>=0.16,<1.0
+# Optional: figure generation (generate_figures.py)
+matplotlib>=3.7,<4.0
