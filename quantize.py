@@ -14,7 +14,7 @@ __all__ = [
 ]
 
 
-def quantize_tensor(w, n_bits=4):
+def quantize_tensor(w: torch.Tensor, n_bits: int = 4) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Per-tensor symmetric uniform quantization.
 
@@ -45,7 +45,7 @@ def quantize_tensor(w, n_bits=4):
     return w_hat, scale
 
 
-def compute_row_scales(W, n_bits=4):
+def compute_row_scales(W: torch.Tensor, n_bits: int = 4) -> torch.Tensor:
     """
     Compute per-row (per-output-channel) quantization scales.
 
@@ -62,7 +62,7 @@ def compute_row_scales(W, n_bits=4):
     return scales
 
 
-def quantize_column(w_col, scales, n_bits=4):
+def quantize_column(w_col: torch.Tensor, scales: torch.Tensor, n_bits: int = 4) -> torch.Tensor:
     """
     Quantize a weight column using pre-computed per-row scales.
 
@@ -83,7 +83,7 @@ def quantize_column(w_col, scales, n_bits=4):
     return q * scales
 
 
-def round_to_nearest(w, n_bits=4):
+def round_to_nearest(w: torch.Tensor, n_bits: int = 4) -> torch.Tensor:
     """
     Naive round-to-nearest quantization (no Hessian compensation).
     Baseline for comparison with GPTQ.
