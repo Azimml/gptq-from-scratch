@@ -25,6 +25,7 @@ Supports **GPT-2, OPT, LLaMA, Mistral, and Qwen2** architectures with automatic 
 - [Optimizations](#optimizations)
 - [Quick Start](#quick-start)
 - [Testing & Development](#testing--development)
+- [Troubleshooting](#troubleshooting)
 - [Limitations](#limitations)
 - [References](#references)
 
@@ -231,6 +232,27 @@ pytest                # 36 tests: primitives, GPTQ math, arch accessors, end-to-
 ```
 
 GitHub Actions runs lint, type-check, and the full test suite on Python 3.10, 3.11, and 3.12 for every push and pull request (see [`.github/workflows/ci.yml`](.github/workflows/ci.yml)).
+
+## Troubleshooting
+
+- **`ValueError: Unsupported architecture: <FooConfig>`** — the model family
+  isn't registered yet. See [Supported Architectures](#supported-architectures);
+  adding one means implementing (or reusing) the accessors in `arch_config.py`
+  and registering the config class in `_CONFIG_CLASS_MAP`.
+- **Out of memory on GPU** — quantization propagates hidden states block by
+  block, so peak memory scales with the calibration set. Lower `--n-samples`,
+  reduce `--seq-len`, or run on CPU with `--device cpu` (slower but unbounded by
+  VRAM).
+- **`ValueError: calibration_data is empty`** — GPTQ needs at least one sample
+  to estimate the layer Hessians; check that `get_calibration_data` returned
+  segments (the dataset must have documents at least `seq_len` tokens long).
+- **Gated models (LLaMA, some Qwen/Mistral)** — pass a Hugging Face token via
+  `--token YOUR_HF_TOKEN` and make sure you've accepted the model's license.
+- **Slow first run** — the first invocation downloads the model and the
+  WikiText-2 / C4 datasets from the Hub. Subsequent runs use the local cache.
+- **`transformers` deprecation warnings** — the loader already picks the right
+  `dtype`/`torch_dtype` keyword per version; if you still see warnings, upgrade
+  to a `transformers` release within the supported range (`>=4.40,<6.0`).
 
 ## Limitations
 
