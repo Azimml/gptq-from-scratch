@@ -1,0 +1,26 @@
+# Normalize line endings to LF on checkin so the repo stays consistent across
+# Windows/macOS/Linux contributors.
+* text=auto eol=lf
+
+# Explicitly treat source and config as text.
+*.py    text
+*.md    text
+*.toml  text
+*.yml   text
+*.yaml  text
+*.cfg   text
+*.txt   text
+
+# Notebooks are JSON but noisy to diff; mark them as text without merge help.
+*.ipynb text
+
+# Binary assets: never touch line endings, don't try to diff.
+*.png   binary
+*.jpg   binary
+*.pt    binary
+*.bin   binary
+*.safetensors binary
+
+# Collapse generated/vendored paths in GitHub's language stats and diffs.
+figures/*   linguist-generated=true
+*.ipynb     linguist-documentation=true
