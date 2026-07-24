@@ -48,7 +48,7 @@ wandb = ["wandb>=0.16,<1.0"]
 figures = ["matplotlib>=3.7,<4.0"]
 # Development / CI tooling.
 dev = [
-    "pytest>=7.0,<9.0",
+    "pytest>=7.0,<10.0",
     "ruff>=0.5,<1.0",
     "mypy>=1.8,<3.0",
 ]
