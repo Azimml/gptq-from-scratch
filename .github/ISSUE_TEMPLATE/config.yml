@@ -1,0 +1,2 @@
+# Require a template; disable blank issues so reports carry enough context.
+blank_issues_enabled: false
