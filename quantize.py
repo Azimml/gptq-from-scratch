@@ -18,7 +18,14 @@ def quantize_tensor(w, n_bits=4):
     Returns:
         Dequantized weight tensor (same shape, float).
         Scale factor used.
+
+    Raises:
+        ValueError: if n_bits < 2 (a single sign bit leaves no magnitude
+            levels, so symmetric quantization is undefined).
     """
+    if n_bits < 2:
+        raise ValueError(f"n_bits must be >= 2 for symmetric quantization, got {n_bits}")
+
     qmax = 2 ** (n_bits - 1) - 1
     qmin = -(2 ** (n_bits - 1))
 
