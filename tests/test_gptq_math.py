@@ -120,6 +120,40 @@ def test_gptq_grouping_runs():
     assert torch.isfinite(Q).all()
 
 
+def test_gptq_grouping_beats_per_row_on_uneven_column_scales():
+    """
+    Per-group scales should reconstruct better than a single per-row scale when
+    column magnitudes vary wildly across the row: a global row absmax is
+    dominated by the loud columns and wastes resolution on the quiet ones, while
+    per-group scales adapt to each block of columns.
+
+    We assert on the two whole-matrix quantities that are unambiguously better
+    with grouping — the internal GPTQ loss and the output-space reconstruction
+    error — rather than any single sub-slice, since error compensation
+    redistributes error across columns.
+    """
+    torch.manual_seed(0)
+    out_features, in_features, n = 16, 64, 4096
+    group = 16
+
+    # Left half of every row is ~100x larger than the right half.
+    W = torch.randn(out_features, in_features)
+    W[:, : in_features // 2] *= 100.0
+
+    X = torch.randn(n, in_features)
+    H = compute_hessian(X)
+
+    Q_group, loss_group = gptq_quantize_layer(W, H, n_bits=4, block_size=group, group_size=group)
+    Q_row, loss_row = gptq_quantize_layer(W, H, n_bits=4, block_size=group, group_size=-1)
+
+    assert torch.isfinite(Q_group).all()
+    assert loss_group < loss_row
+
+    err_group = (W @ X.T - Q_group @ X.T).pow(2).mean().item()
+    err_row = (W @ X.T - Q_row @ X.T).pow(2).mean().item()
+    assert err_group < err_row
+
+
 def test_gptq_higher_bits_lower_loss():
     """Higher bit-width should yield lower GPTQ reconstruction loss."""
     torch.manual_seed(0)
