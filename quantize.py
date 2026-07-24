@@ -29,6 +29,16 @@ def quantize_tensor(w: torch.Tensor, n_bits: int = 4) -> tuple[torch.Tensor, tor
     Raises:
         ValueError: if n_bits < 2 (a single sign bit leaves no magnitude
             levels, so symmetric quantization is undefined).
+
+    Example:
+        >>> import torch
+        >>> w = torch.tensor([-4.0, 0.0, 2.0, 4.0])
+        >>> w_hat, scale = quantize_tensor(w, n_bits=4)
+        >>> # scale = |w|.max() / (2**3 - 1) = 4 / 7
+        >>> bool(torch.isclose(scale, torch.tensor(4.0 / 7.0)))
+        True
+        >>> w_hat.shape == w.shape
+        True
     """
     if n_bits < 2:
         raise ValueError(f"n_bits must be >= 2 for symmetric quantization, got {n_bits}")
